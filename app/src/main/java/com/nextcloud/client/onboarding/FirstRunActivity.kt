@@ -86,6 +86,9 @@ class FirstRunActivity : BaseActivity(), Injectable {
         deleteAccountAtFirstLaunch()
         setupFeaturesViewAdapter()
         handleOnBackPressed()
+
+        val authenticatorActivityIntent = getAuthenticatorActivityIntent(false)
+        activityResult?.launch(authenticatorActivityIntent)
     }
 
     private fun applyDefaultTheme() {

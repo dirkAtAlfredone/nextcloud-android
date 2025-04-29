@@ -242,6 +242,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /* Add start */
+
+        /* Add end */
+
         viewThemeUtils = viewThemeUtilsFactory.withPrimaryAsBackground();
         viewThemeUtils.platform.colorStatusBar(this, getResources().getColor(R.color.primary));
 
@@ -405,6 +410,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      *            Example: "<a href="https://example.com/index.php/login/v2">...</a>"
      */
     private void anonymouslyPostLoginRequest(String url) {
+
+        Log.d("AuthAct", "anonymouslyPostLoginRequest");
         baseUrl = url;
 
         Thread thread = new Thread(() -> {
@@ -428,6 +435,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private String getResponseOfAnonymouslyPostLoginRequest() {
+        Log.d("AuthAct", "getResponseOfAnonymouslyPostLoginRequest");
         PostMethod post = new PostMethod(baseUrl, false, new FormBody.Builder().build());
         PlainClient client = clientFactory.createPlainClient();
         post.execute(client);
@@ -435,6 +443,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private String getLoginUrl(JsonObject response) {
+        Log.d("AuthAct", "getLoginUrl");
         String result = response.get("login").getAsString();
         if (result == null) {
             result = getResources().getString(R.string.webview_login_url);
@@ -444,6 +453,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void launchDefaultWebBrowser(String url) {
+        Log.d("AuthAct", "launchDefaultWebBrowser");
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -451,6 +461,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d("AuthAct", "onKeyDown");
         if (accountSetupWebviewBinding != null && event.getAction() == KeyEvent.ACTION_DOWN &&
             keyCode == KeyEvent.KEYCODE_BACK) {
             return true;
@@ -459,6 +470,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void parseAndLoginFromWebView(String dataString) {
+        Log.d("AuthAct", "parseAndLoginFromWebView");
         try {
             String prefix = getString(R.string.login_data_own_scheme) + PROTOCOL_SUFFIX + "login/";
             LoginUrlInfo loginUrlInfo = parseLoginDataUrl(prefix, dataString);
@@ -486,6 +498,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * @throws IllegalArgumentException when
      */
     public static LoginUrlInfo parseLoginDataUrl(String prefix, String dataString) throws IllegalArgumentException {
+        Log.d("AuthAct", "parseLoginDataUrl");
         if (dataString.length() < prefix.length()) {
             throw new IllegalArgumentException("Invalid login URL detected");
         }
@@ -523,6 +536,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * Configures elements in the user interface under direct control of the Activity.
      */
     private void initOverallUi() {
+        Log.d("AuthAct", "initOverallUi");
         accountSetupBinding.hostUrlContainer.setEndIconOnClickListener(v -> checkOcServer());
 
         accountSetupBinding.hostUrlInputHelperText.setText(
@@ -546,6 +560,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * @param savedInstanceState Saved activity state, as in {{@link #onCreate(Bundle)}
      */
     private void initServerPreFragment(Bundle savedInstanceState) {
+        Log.d("AuthAct", "initServerPreFragment");
         // step 1 - load and process relevant inputs (resources, intent, savedInstanceState)
         if (savedInstanceState == null) {
             if (mAccount != null) {
@@ -584,6 +599,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      */
     private void initAuthorizationPreFragment(Bundle savedInstanceState) {
         /// step 1 - load and process relevant inputs (resources, intent, savedInstanceState)
+        Log.d("AuthAct", "initAuthorizationPreFragment");
         if (savedInstanceState != null) {
             mAuthStatusText = savedInstanceState.getString(KEY_AUTH_STATUS_TEXT);
             mAuthStatusIcon = savedInstanceState.getInt(KEY_AUTH_STATUS_ICON);
@@ -603,6 +619,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      */
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.d("AuthAct", "onSaveInstanceState");
         //Log_OC.e(TAG, "onSaveInstanceState init" );
         super.onSaveInstanceState(outState);
 
@@ -631,6 +648,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        Log.d("AuthAct", "onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
 
         // AsyncTask
@@ -655,6 +673,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log_OC.d(TAG, "onNewIntent()");
+        Log.d("AuthAct", "onNewIntent");
 
         if (intent.getBooleanExtra(FirstRunActivity.EXTRA_EXIT, false)) {
 
@@ -686,6 +705,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private boolean checkIfViaSSO(Intent intent) {
+        Log.d("AuthAct", "checkIfViaSSO");
         Bundle extras = intent.getExtras();
         if (extras == null) {
             return false;
@@ -716,6 +736,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         if (mOperationsServiceBinder != null) {
             doOnResumeAndBound();
         }
+
+        checkOcServer();
     }
 
 
@@ -744,14 +766,21 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     @SuppressFBWarnings("NP")
     private void checkOcServer() {
         String uri;
+        Log.d("AuthAct", "checkOcServer");
 
-        if (accountSetupBinding != null &&
-            accountSetupBinding.hostUrlInput.getText() != null &&
-            !accountSetupBinding.hostUrlInput.getText().toString().isEmpty()) {
-            uri = accountSetupBinding.hostUrlInput.getText().toString().trim();
-        } else {
-            uri = mServerInfo.mBaseUrl;
-        }
+//        if (accountSetupBinding != null &&
+//            accountSetupBinding.hostUrlInput.getText() != null &&
+//            !accountSetupBinding.hostUrlInput.getText().toString().isEmpty()) {
+//            uri = accountSetupBinding.hostUrlInput.getText().toString().trim();
+//            /* Add start */
+//            uri = "http://192.168.1.12";
+//            Log.d("AuthAct", uri);
+//            /* Add end */
+//        } else {
+//            uri = mServerInfo.mBaseUrl;
+//        }
+
+        uri = "http://192.168.1.12";
 
         mServerInfo = new GetServerInfoOperation.ServerInfo();
 
@@ -803,6 +832,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      */
     private void checkBasicAuthorization(@Nullable String webViewUsername, @Nullable String webViewPassword) {
         // be gentle with the user
+
+        Log.d("AuthAct", "checkBasicAuthorization");
         IndeterminateProgressDialog dialog = IndeterminateProgressDialog.newInstance(R.string.auth_trying_to_login,
                                                                                      true);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -816,6 +847,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void accessRootFolder(OwnCloudCredentials credentials) {
+        Log.d("AuthAct", "accessRootFolder");
         mAsyncTask = new AuthenticatorAsyncTask(this);
         Object[] params = {mServerInfo.mBaseUrl, credentials};
         mAsyncTask.execute(params);
@@ -828,6 +860,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      */
     @Override
     public void onRemoteOperationFinish(RemoteOperation operation, RemoteOperationResult result) {
+        Log.d("AuthAct", "onRemoteOperationFinish");
         if (operation instanceof GetServerInfoOperation) {
             if (operation.hashCode() == mWaitingForOpId) {
                 onGetServerInfoFinish(result);
@@ -840,6 +873,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void onGetUserNameFinish(RemoteOperationResult<UserInfo> result) {
+        Log.d("AuthAct", "onGetUserNameFinish");
         mWaitingForOpId = Long.MAX_VALUE;
         if (result.isSuccess()) {
             boolean success = false;
@@ -876,6 +910,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * @param result Result of the check.
      */
     private void onGetServerInfoFinish(RemoteOperationResult result) {
+        Log.d("AuthAct", "onGetServerInfoFinish");
         /// update activity state
         mWaitingForOpId = Long.MAX_VALUE;
 
@@ -923,6 +958,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
     // region LoginInfoView
     private void initLoginInfoView() {
+        Log.d("AuthAct", "initLoginInfoView");
         LinearLayout loginFlowLayout = accountSetupWebviewBinding.loginFlowV2.getRoot();
         MaterialButton cancelButton = accountSetupWebviewBinding.loginFlowV2.cancelButton;
         loginFlowLayout.setVisibility(View.VISIBLE);
@@ -941,6 +977,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * @param result Result of a remote operation performed in this activity
      */
     private void updateServerStatusIconAndText(RemoteOperationResult result) {
+        Log.d("AuthAct", "updateServerStatusIconAndText");
         mServerStatusIcon = R.drawable.ic_alert;    // the most common case in the switch below
 
         switch (result.getCode()) {
@@ -1044,6 +1081,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * @param result Result of a remote operation performed in this activity
      */
     private void updateAuthStatusIconAndText(RemoteOperationResult result) {
+        Log.d("AuthAct", "updateAuthStatusIconAndText");
         mAuthStatusIcon = R.drawable.ic_alert;    // the most common case in the switch below
 
         switch (result.getCode()) {
@@ -1101,6 +1139,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void updateStatusIconFailUserName(int failedStatusText) {
+        Log.d("AuthAct", "updateStatusIconFailUserName");
         mAuthStatusIcon = R.drawable.ic_alert;
         mAuthStatusText = getResources().getString(failedStatusText);
     }
@@ -1114,6 +1153,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      */
     @Override
     public void onAuthenticatorTaskCallback(RemoteOperationResult<UserInfo> result) {
+        Log.d("AuthAct", "onAuthenticatorTaskCallback");
         mWaitingForOpId = Long.MAX_VALUE;
         dismissWaitingDialog();
         mAsyncTask = null;
@@ -1190,6 +1230,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void endSuccess() {
+        Log.d("AuthAct", "endSuccess");
         if (!onlyAdd) {
             if (MDMConfig.INSTANCE.enforceProtection(this) && Objects.equals(preferences.getLockPreference(), SettingsActivity.LOCK_NONE)) {
                 Intent i = new Intent(this, SettingsActivity.class);
@@ -1206,6 +1247,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void getUserCapabilitiesAndFinish() {
+        Log.d("AuthAct", "getUserCapabilitiesAndFinish");
         final Handler handler = new Handler();
         final Optional<User> user = accountManager.getUser(mAccount.name);
 
@@ -1236,6 +1278,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * needed.
      */
     private void updateAccountAuthentication() throws AccountNotFoundException {
+        Log.d("AuthAct", "updateAccountAuthentication");
         Bundle response = new Bundle();
         response.putString(AccountManager.KEY_ACCOUNT_NAME, mAccount.name);
         response.putString(AccountManager.KEY_ACCOUNT_TYPE, mAccount.type);
@@ -1262,6 +1305,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     @SuppressFBWarnings("DMI")
     @SuppressLint("TrulyRandom")
     protected boolean createAccount(RemoteOperationResult<UserInfo> authResult) {
+        Log.d("AuthAct", "createAccount");
         String accountType = MainApp.getAccountType(this);
 
         // create and save new ownCloud account
@@ -1336,6 +1380,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     public void onScan() {
+        Log.d("AuthAct", "onScan");
         if (PermissionUtil.checkSelfPermission(this, Manifest.permission.CAMERA)) {
             startQRScanner();
         } else {
@@ -1344,6 +1389,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void startQRScanner() {
+        Log.d("AuthAct", "startQRScanner");
         Intent intent = new Intent(this, QrCodeActivity.class);
         qrScanResultLauncher.launch(intent);
     }
@@ -1380,6 +1426,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        Log.d("AuthAct", "onRequestPermissionsResult");
         if (requestCode == PERMISSIONS_CAMERA) {// If request is cancelled, result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // permission was granted
@@ -1395,6 +1442,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * server.
      */
     private void showServerStatus() {
+        Log.d("AuthAct", "showServerStatus");
         if (accountSetupBinding == null) {
             return;
         }
@@ -1413,6 +1461,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * authorization server.
      */
     private void showAuthStatus() {
+        Log.d("AuthAct", "showAuthStatus");
         if (accountSetupBinding != null) {
             if (mAuthStatusIcon == NO_ICON && EMPTY_STRING.equals(mAuthStatusText)) {
                 accountSetupBinding.authStatusText.setVisibility(View.INVISIBLE);
@@ -1432,6 +1481,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      */
     @Override
     public boolean onEditorAction(TextView inputField, int actionId, KeyEvent event) {
+        Log.d("AuthAct", "onEditorAction");
         if ((actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL)
             && inputField != null && inputField.equals(accountSetupBinding.hostUrlInput)) {
             checkOcServer();
@@ -1444,6 +1494,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
      * Show untrusted cert dialog
      */
     private void showUntrustedCertDialog(RemoteOperationResult result) {
+        Log.d("AuthAct", "showUntrustedCertDialog");
         // Show a dialog with the certificate info
         SslUntrustedCertDialog dialog = SslUntrustedCertDialog.
             newInstanceForFullSslError((CertificateCombinedException) result.getException());
@@ -1455,6 +1506,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void doOnResumeAndBound() {
+        Log.d("AuthAct", "doOnResumeAndBound");
         mOperationsServiceBinder.addOperationListener(this, mHandler);
         if (mWaitingForOpId <= Integer.MAX_VALUE) {
             mOperationsServiceBinder.dispatchResultIfFinished((int) mWaitingForOpId, this);
@@ -1462,6 +1514,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void dismissWaitingDialog() {
+        Log.d("AuthAct", "dismissWaitingDialog");
         Fragment frag = getSupportFragmentManager().findFragmentByTag(WAIT_DIALOG_TAG);
         if (frag instanceof DialogFragment dialog) {
             try {
