@@ -22,7 +22,7 @@
         android:layout_height="@dimen/share_icon_size"
         android:layout_gravity="center_horizontal"
         android:contentDescription="@string/sendbutton_description"
-        tools:src="@mipmap/ic_launcher" />
+        tools:src="@mipmap/previous_logo" />
 
     <TextView
         android:id="@+id/send_button_text"

@@ -25,7 +25,6 @@ import android.provider.CalendarContract.Reminders;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
@@ -272,7 +271,7 @@ public class SaveCalendar {
         final int ok = android.R.string.ok;
         final int cancel = android.R.string.cancel;
         final int suggest = R.string.suggest;
-        AlertDialog dlg = new MaterialAlertDialogBuilder(activity).setIcon(R.mipmap.ic_launcher)
+        AlertDialog dlg = new MaterialAlertDialogBuilder(activity).setIcon(R.mipmap.previous_logo)
             .setTitle(R.string.enter_destination_filename)
             .setView(input)
             .setPositiveButton(ok, (iface, id) -> result[0] = input.getText().toString())

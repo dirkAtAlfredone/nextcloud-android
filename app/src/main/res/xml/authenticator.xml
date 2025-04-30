@@ -8,7 +8,7 @@
 -->
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
                        android:accountType="@string/account_type"
-                       android:icon="@mipmap/ic_launcher"
+                       android:icon="@mipmap/previous_logo"
                        android:label="@string/app_name"
-                       android:smallIcon="@mipmap/ic_launcher">
+                       android:smallIcon="@mipmap/previous_logo">
 </account-authenticator>
